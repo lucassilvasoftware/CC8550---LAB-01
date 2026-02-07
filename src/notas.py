@@ -8,11 +8,8 @@ def validar_nota(nota):
     Returns:
         bool: True se válida, False caso contrário
     """
-    try:
-        nota_float = float(nota)
-        return 0 <= nota_float <= 10
-    except (TypeError, ValueError):
-        return False
+    nota_float = float(nota)
+    return 0 <= nota_float <= 10
 
 
 def calcular_media(notas):

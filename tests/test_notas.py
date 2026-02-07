@@ -319,3 +319,15 @@ class TestNormalizarNotas:
         
         # ASSERT
         assert resultado == []
+
+
+class TestExcecao:
+    def test_validar_nota_string(self):
+        """Testa se validar_nota lança exceção para string."""
+        with pytest.raises(ValueError):
+            validar_nota("abc")
+    
+    def test_validar_nota_none(self):
+        """Testa se validar_nota lança exceção para None."""
+        with pytest.raises(ValueError):
+            validar_nota(None) 
