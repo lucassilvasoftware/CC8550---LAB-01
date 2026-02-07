@@ -342,3 +342,128 @@ class TestNormalizarNotas:
         
         # ASSERT
         assert resultado == []
+
+class TestExcecoes:
+    """Suite de testes para exceções e casos extremos."""
+    
+    def test_validar_nota_lista_nao_explode(self):
+        """Testa que lista como nota retorna False (não explode)."""
+        # ARRANGE
+        nota = [5, 6, 7]
+        
+        # ACT & ASSERT
+        assert validar_nota(nota) is False
+    
+    def test_calcular_media_com_tupla(self):
+        """Testa cálculo de média com tupla de notas."""
+        # ARRANGE
+        notas = (5, 7, 9)
+        
+        # ACT
+        resultado = calcular_media(notas)
+        
+        # ASSERT
+        assert resultado == 7.0
+    
+    def test_normalizar_com_max_negativo(self):
+        """Testa normalização com max_valor negativo."""
+        # ARRANGE
+        notas = [5, 10]
+        max_valor = -100
+        
+        # ACT
+        resultado = normalizar_notas(notas, max_valor)
+        
+        # ASSERT
+        assert resultado == []
+
+
+class TestExcecoesReais:
+    """Suite de testes para explorar exceções com pytest.raises."""
+    
+    def test_normalizar_com_max_string_levanta_erro(self):
+        """Testa se normalizar com max_valor string lança TypeError."""
+        # ARRANGE
+        notas = [50, 100]
+        max_valor = "100"
+        
+        # ACT & ASSERT - pytest.raises captura a exceção
+        with pytest.raises(TypeError):
+            normalizar_notas(notas, max_valor)
+    
+    def test_normalizar_com_max_none_levanta_erro(self):
+        """Testa se normalizar com max_valor None lança TypeError."""
+        # ARRANGE
+        notas = [50]
+        max_valor = None
+        
+        # ACT & ASSERT
+        with pytest.raises(TypeError):
+            normalizar_notas(notas, max_valor)
+    
+    def test_calcular_media_com_dict_invalido(self):
+        """Testa cálculo de média com dicionário (iterable mas não números)."""
+        # ARRANGE
+        notas = {"a": 5, "b": 10}
+        
+        # ACT
+        resultado = calcular_media(notas)
+        
+        # ASSERT - Retorna 0 pois "a" e "b" não são válidas
+        assert resultado == 0
+    
+    def test_obter_situacao_com_string_levanta_erro(self):
+        """Testa se obter_situacao com string lança TypeError."""
+        # ARRANGE
+        media = "7"
+        
+        # ACT & ASSERT - Comparação com string falha
+        with pytest.raises(TypeError):
+            obter_situacao(media)
+    
+    def test_calcular_estatisticas_com_numero_invalido_levanta_erro(self):
+        """Testa se calcular_estatisticas com número não-iterável falha."""
+        # ARRANGE
+        notas = 42  # Número, não lista
+        
+        # ACT & ASSERT
+        with pytest.raises(TypeError):
+            calcular_estatisticas(notas)
+    
+    def test_normalizar_com_parametros_trocados(self):
+        """Testa comportamento quando argumentos estão em ordem errada."""
+        # ARRANGE
+        notas = 100  # max_valor
+        max_valor = [50, 100]  # notas
+        
+        # ACT & ASSERT
+        with pytest.raises(TypeError):
+            normalizar_notas(notas, max_valor)
+    
+    def test_pytest_raises_com_mensagem_especifica(self):
+        """Testa se exceção contém mensagem esperada usando match."""
+        # ARRANGE
+        notas = [50]
+        max_valor = "100"
+        
+        # ACT & ASSERT - Verifica mensagem de erro
+        with pytest.raises(TypeError, match="unsupported operand type"):
+            normalizar_notas(notas, max_valor)
+    
+    def test_pytest_raises_captura_exceção_correta(self):
+        """Testa que pytest.raises capta apenas a exceção esperada."""
+        # ARRANGE
+        notas = [50, 100, "abc"]
+        max_valor = 100
+        
+        # ACT & ASSERT - Não lança exceção, retorna lista válida
+        resultado = normalizar_notas(notas, max_valor)
+        assert resultado == [5.0, 10.0, 0.0]  # "abc" é ignorado
+    
+    def test_multiplas_exceções_com_pytest_raises(self):
+        """Testa captura de múltiplas tipos de exceção."""
+        # ARRANGE - Diferentes cenários que causam TypeError
+        
+        # ACT & ASSERT - Pode capturar múltiplas exceções
+        with pytest.raises((TypeError, AttributeError)):
+            normalizar_notas([50], "100")
